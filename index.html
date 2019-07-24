@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .div{
+            width: 200px;
+            height: 150px;
+            background: #DDD;
+        }
+    </style>
+</head>
+<body>
+
+    <form id="form">
+        Nome: <br>
+        <input type="text" name="nome"><br><br>
+        Senha: <br>
+        <input type="password" name="senha"><br><br>
+
+        Idade: <br>
+        <select name="idade">
+            <option>10 anos</option>
+            <option>20 anos</option>
+            <option>30 anos</option>
+            <option>40 anos</option>
+        </select>
+        <br><br>
+        <button type="submit">Enviar</button>
+    </form>
+    <br>
+    <div class="div"></div>
+    <button type="button">Carregar</button>
+    
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script>
+        $(function(){
+            // $('button').on('click', ()=>{
+            //     $('div').load("teste.html");
+            // });
+            let c = 0;
+            $('button[type="button"]').on('click', ()=>{
+                c++;
+                $.get(`https://pokeapi.co/api/v2/pokemon/${c}`, data =>{
+                    // console.log(data);
+                    let img = `
+                        <strong>${data.name}</strong><br>
+                        <img src="${data.sprites.front_default}">
+                        <img src="${data.sprites.back_default}">
+                    `;
+                    $('.div').html(img);
+                });
+            });
+
+            $('#form').on('submit', function(e){
+                e.preventDefault();
+                let txt = $(this).serialize();
+                // console.log(txt);
+                $.ajax({
+                    url: "ajax.php",
+                    method: "GET",
+                    dataType: "json",
+                    data: txt,
+                    success: function(json){
+                        // console.log(json);
+                        $('.div').html(json.nome+"<br>");
+                        if(json.status == "OK"){
+                            $('.div').append("Logado "+json.status);
+                        }else{
+                            $('.div').append("Faça seu login ");
+                        }
+                    },
+                    error: function(){
+                        alert("Erro requisição ajax");
+                    }
+                });
+            })
+        });
+    </script>
+</body>
+</html>
